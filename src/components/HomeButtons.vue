@@ -12,7 +12,7 @@
 import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import auth from '../store/auth'
-import Cookies from 'js-cookie' // Импортируйте js-cookie
+import Cookies from 'js-cookie'
 
 export default defineComponent({
   setup() {
@@ -25,14 +25,11 @@ export default defineComponent({
     const goToCart = () => router.push('/cart')
 
     const logout = () => {
-      // Удаляем токены из cookies
       Cookies.remove('access_token')
       Cookies.remove('refresh_token')
 
-      // Вызываем метод logout из вашего auth store
       auth.logout()
 
-      // Обновляем страницу
       location.reload()
     }
 
@@ -49,5 +46,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Добавьте свои стили здесь */
 </style>

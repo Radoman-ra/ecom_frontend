@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <!-- Рендерим активный маршрут -->
   </div>
 </template>
 
@@ -13,6 +12,4 @@ export default defineComponent({
 })
 </script>
 
-<style>
-/* Добавь глобальные стили, если нужно */
-</style>
+<style></style>

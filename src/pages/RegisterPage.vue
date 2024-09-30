@@ -14,7 +14,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router' // Импортируйте useRouter
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   data() {
@@ -26,7 +26,7 @@ export default defineComponent({
     }
   },
   setup() {
-    const router = useRouter() // Переместите сюда
+    const router = useRouter()
     return { router }
   },
   methods: {
@@ -39,23 +39,18 @@ export default defineComponent({
         })
 
         this.message = 'Registration successful!'
-        this.router.push('/login') // Путь к странице входа
+        this.router.push('/login')
       } catch (error) {
         const err = error as any
         if (err.response) {
-          // Если есть ответ от сервера
           if (err.response.status === 422 && Array.isArray(err.response.data.detail)) {
-            // Обработка ошибок валидации
             this.message = err.response.data.detail.map((err: any) => err.msg).join(', ')
           } else if (err.response.data.detail && typeof err.response.data.detail === 'string') {
-            // Если detail - это строка, просто выводим её
             this.message = err.response.data.detail
           } else {
-            // Другие ошибки
             this.message = `Error: ${err.response.status} - ${err.response.data.detail || 'Unknown error'}`
           }
         } else {
-          // Если нет ответа от сервера
           this.message = 'An error occurred. Please check your network connection.'
         }
       }
@@ -65,5 +60,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Добавьте свои стили здесь */
 </style>

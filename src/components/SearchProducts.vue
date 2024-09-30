@@ -6,6 +6,8 @@
       <input v-model="creationDateTo" placeholder="Creation Date To" type="date" />
       <input v-model="categoryName" placeholder="Category Name" />
       <input v-model="supplierName" placeholder="Supplier Name" />
+      <input v-model="minPrice" placeholder="Min Price" type="number" />
+      <input v-model="maxPrice" placeholder="Max Price" type="number" />
       <button type="submit">Search</button>
     </form>
 
@@ -18,6 +20,10 @@
       <ul>
         <li v-for="product in products" :key="product.id">
           {{ product.name }} - {{ product.price }}$
+          <button @click="addToCart(product)">Add to Cart</button>
+          <span v-if="getCartQuantity(product.id) > 0">
+            ({{ getCartQuantity(product.id) }} in cart)</span
+          >
         </li>
       </ul>
       <div>
@@ -30,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
 import axios from 'axios'
 
 export default defineComponent({
@@ -41,27 +47,26 @@ export default defineComponent({
       creationDateTo: '',
       categoryName: '',
       supplierName: '',
+      minPrice: '',
+      maxPrice: '',
       products: [] as Array<{ id: number; name: string; price: number }>,
       currentPage: 1,
       totalPages: 0,
       totalProducts: 0,
       limit: 10,
-      errorMessage: '' // Для хранения сообщения об ошибке
+      errorMessage: '',
+      cart: reactive(JSON.parse(localStorage.getItem('cart') || '[]'))
     }
   },
   methods: {
-    async searchProducts(event: Event, page: number = 1) {
-      event.preventDefault() // Prevent default form submission behavior
+    async searchProducts() {
+      this.errorMessage = ''
 
-      this.errorMessage = '' // Сбрасываем сообщение об ошибке перед каждым запросом
-
-      // Начальные параметры для запроса
       const params: any = {
         limit: this.limit,
-        offset: (page - 1) * this.limit // Расчет смещения на основе текущей страницы
+        offset: (this.currentPage - 1) * this.limit
       }
 
-      // Добавляем только непустые параметры
       if (this.productName) {
         params.product_name = this.productName
       }
@@ -77,15 +82,20 @@ export default defineComponent({
       if (this.supplierName) {
         params.supplier_name = this.supplierName
       }
+      if (this.minPrice) {
+        params.min_price = this.minPrice
+      }
+      if (this.maxPrice) {
+        params.max_price = this.maxPrice
+      }
 
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/search/products', {
           params
         })
         this.products = response.data.products
-        this.totalProducts = response.data.total_products // Общее количество продуктов
-        this.totalPages = response.data.total_pages // Общее количество страниц
-        this.currentPage = page // Устанавливаем текущую страницу
+        this.totalProducts = response.data.total_products
+        this.totalPages = response.data.total_pages
       } catch (error: any) {
         if (error.response && error.response.status === 404) {
           this.errorMessage = 'No products found matching the criteria'
@@ -95,22 +105,39 @@ export default defineComponent({
         console.error('Error fetching products:', error)
       }
     },
-    nextPage() {
+    async nextPage() {
       if (this.currentPage < this.totalPages) {
-        this.searchProducts(new Event(''), this.currentPage + 1) // Переход к следующей странице
+        this.currentPage++
+        await this.searchProducts()
       }
     },
-    prevPage() {
+    async prevPage() {
       if (this.currentPage > 1) {
-        this.searchProducts(new Event(''), this.currentPage - 1) // Переход к предыдущей странице
+        this.currentPage--
+        await this.searchProducts()
       }
+    },
+    addToCart(product: { id: number; name: string; price: number }) {
+      const existingItem = this.cart.find((item: { id: number }) => item.id === product.id)
+
+      if (existingItem) {
+        existingItem.quantity++
+      } else {
+        this.cart.push({ ...product, quantity: 1 })
+      }
+
+      localStorage.setItem('cart', JSON.stringify(this.cart))
+      this.cart = reactive(JSON.parse(localStorage.getItem('cart') || '[]'))
+    },
+    getCartQuantity(productId: number): number {
+      const item = this.cart.find((item: { id: number }) => item.id === productId)
+      return item ? item.quantity : 0
     }
   }
 })
 </script>
 
 <style scoped>
-/* Добавьте свои стили здесь */
 .error-message {
   font-weight: bold;
   margin-top: 10px;

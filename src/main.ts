@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router' // Импорт роутера
-import './assets/main.css' // Дополнительно для стилей, если нужно
+import router from './router'
+import './assets/main.css'
 
 const app = createApp(App)
 
-app.use(router) // Подключаем роутер
+app.use(router)
 
 app.mount('#app')

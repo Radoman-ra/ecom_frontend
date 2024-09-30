@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 const state = reactive({
-  isAuthenticated: !!localStorage.getItem('authToken') // Проверяем, есть ли токен в localStorage
+  isAuthenticated: !!localStorage.getItem('authToken')
 })
 
 const login = (token: string) => {

@@ -14,7 +14,7 @@ import { defineComponent, ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import auth from '../store/auth'
-import Cookies from 'js-cookie' // Импортируем js-cookie
+import Cookies from 'js-cookie'
 
 export default defineComponent({
   setup() {
@@ -22,8 +22,8 @@ export default defineComponent({
     const password = ref('')
     const router = useRouter()
 
-    const ACCESS_TOKEN_EXPIRE_MINUTES = 15 // Время жизни access токена в минутах
-    const REFRESH_TOKEN_EXPIRE_DAYS = 7 // Время жизни refresh токена в днях
+    const ACCESS_TOKEN_EXPIRE_MINUTES = 15
+    const REFRESH_TOKEN_EXPIRE_DAYS = 7
 
     const login = async () => {
       try {
@@ -32,29 +32,23 @@ export default defineComponent({
           password: password.value
         })
 
-        // Извлекаем токены из ответа
         const { access_token, refresh_token } = response.data
 
-        // Сохраняем access_token на 15 минут
         Cookies.set('access_token', access_token, {
           expires: ACCESS_TOKEN_EXPIRE_MINUTES / (24 * 60),
           secure: true
         })
 
-        // Сохраняем refresh_token на 7 дней
         Cookies.set('refresh_token', refresh_token, {
           expires: REFRESH_TOKEN_EXPIRE_DAYS,
           secure: true
         })
 
-        // Сохраняем токен в auth
         auth.login(access_token)
 
-        // Перенаправляем на главную страницу
         router.push('/')
       } catch (error) {
         console.error('Login failed:', error)
-        // Обработка ошибок, например, отображение сообщения пользователю
       }
     }
 
@@ -67,6 +61,4 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-/* Добавьте свои стили здесь */
-</style>
+<style scoped></style>
