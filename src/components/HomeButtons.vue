@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <button v-if="!isAuthenticated" @click="goToLogin">Login</button>
-    <button v-if="!isAuthenticated" @click="goToRegister">Register</button>
-    <button v-else @click="goToProfile">Profile</button>
-    <button v-if="isAuthenticated" @click="goToCart">Cart</button>
-    <button v-if="isAuthenticated" @click="logout">Logout</button>
+  <div class="auth-buttons">
+    <button v-if="isAuthenticated" @click="logout" class="btn">Logout</button>
+    <button v-if="!isAuthenticated" @click="goToLogin" class="btn">Login</button>
+    <button v-if="!isAuthenticated" @click="goToRegister" class="btn">Register</button>
+    <button v-else @click="goToProfile" class="btn">Profile</button>
+    <button @click="goToCart" class="btn">Cart</button>
   </div>
 </template>
 
@@ -46,4 +46,29 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 20px;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  background-color: #d8e2dc;
+  color: #000;
+}
 </style>

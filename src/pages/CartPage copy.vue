@@ -17,11 +17,9 @@
             type="number"
             v-model.number="item.quantity"
             min="1"
-            :max="item.availableQuantity"
             @input="updateQuantity(item)"
           />
           = {{ (item.price * item.quantity).toFixed(2) }}$
-          <span v-if="item.availableQuantity < 999">(Available: {{ item.availableQuantity }})</span>
           <button class="remove-button" @click="removeFromCart(item.id)">Remove</button>
         </li>
       </ul>
@@ -32,7 +30,6 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
 
 export default defineComponent({
   setup() {
@@ -53,11 +50,9 @@ export default defineComponent({
       cartItems.value = updatedCart
     }
 
-    const updateQuantity = (item: { id: number; quantity: number; availableQuantity: number }) => {
+    const updateQuantity = (item: { id: number; quantity: number }) => {
       if (item.quantity < 1) {
         removeFromCart(item.id)
-      } else if (item.quantity > item.availableQuantity) {
-        item.quantity = item.availableQuantity // Set to max available quantity
       } else {
         const updatedCart = cartItems.value.map((cartItem: { id: number; quantity: number }) =>
           cartItem.id === item.id ? { ...cartItem, quantity: item.quantity } : cartItem
@@ -74,10 +69,9 @@ export default defineComponent({
       }))
 
       const order = {
-        products
+        products,
+        status: 'pending' // Add the status field here
       }
-
-      console.log('Order payload:', order) // Debug: Log the order object
 
       const getAccessToken = () => {
         const cookieString = document.cookie
@@ -87,7 +81,13 @@ export default defineComponent({
       }
 
       const token = getAccessToken()
-      console.log('JWT token:', token) // Debug: Log the JWT token
+
+      const curlCommand = `curl -X POST http://127.0.0.1:8000/api/orders/ \\
+-H "Authorization: ${token}" \\
+-H "Content-Type: application/json" \\
+-d '${JSON.stringify(order, null, 2)}'`
+
+      console.log('Curl command:', curlCommand)
 
       try {
         const response = await fetch('http://127.0.0.1:8000/api/orders/', {
@@ -99,12 +99,6 @@ export default defineComponent({
           body: JSON.stringify(order)
         })
 
-        console.log('Response status:', response.status) // Debug: Log the response status
-        console.log('Response headers:', response.headers) // Debug: Log the response headers
-
-        const responseData = await response.json().catch(() => null)
-        console.log('Response body:', responseData) // Debug: Log the response body
-
         if (response.status === 401) {
           alert('First you need to log in to your account')
           router.push('/login')
@@ -115,7 +109,9 @@ export default defineComponent({
           throw new Error('Network response was not ok')
         }
 
+        const responseData = await response.json()
         alert('Order placed successfully!')
+        console.log('Server response:', responseData)
         localStorage.removeItem('cart')
         cartItems.value = []
       } catch (error) {
@@ -127,29 +123,6 @@ export default defineComponent({
     const goHome = () => {
       router.push('/')
     }
-
-    // Fetch available quantities for products in the cart
-    const fetchAvailableQuantities = async () => {
-      try {
-        const productIds = cartItems.value.map((item: { id: number }) => item.id).join(',')
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/products/available-quantities?ids=${productIds}`
-        )
-
-        // Assuming the response contains an array of objects like [{id: 1, available_quantity: 10}, ...]
-        response.data.forEach((product: { id: number; quantity: number }) => {
-          const cartItem = cartItems.value.find((item: { id: number }) => item.id === product.id)
-          if (cartItem) {
-            cartItem.availableQuantity = product.quantity
-          }
-        })
-      } catch (error) {
-        console.error('Error fetching available quantities:', error)
-      }
-    }
-
-    // Fetch available quantities when the component is mounted
-    fetchAvailableQuantities()
 
     return {
       cartItems,

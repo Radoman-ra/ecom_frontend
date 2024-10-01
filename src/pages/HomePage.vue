@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home-page">
     <AuthButtons />
     <SearchProducts />
   </div>
@@ -17,3 +17,14 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+</style>
