@@ -11,13 +11,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
-import auth from '../store/auth'
 import Cookies from 'js-cookie'
 
 export default defineComponent({
   setup() {
     const router = useRouter()
-    const isAuthenticated = auth.state.isAuthenticated
+
+    const isAuthenticated = !!Cookies.get('access_token')
 
     const goToLogin = () => router.push('/login')
     const goToRegister = () => router.push('/register')
@@ -27,9 +27,6 @@ export default defineComponent({
     const logout = () => {
       Cookies.remove('access_token')
       Cookies.remove('refresh_token')
-
-      auth.logout()
-
       location.reload()
     }
 

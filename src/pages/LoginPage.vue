@@ -20,7 +20,6 @@
 import { defineComponent, ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
-import auth from '../store/auth'
 import Cookies from 'js-cookie'
 
 export default defineComponent({
@@ -51,8 +50,6 @@ export default defineComponent({
           expires: REFRESH_TOKEN_EXPIRE_DAYS,
           secure: true
         })
-
-        auth.login(access_token)
 
         router.push('/')
       } catch (error) {
