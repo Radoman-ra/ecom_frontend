@@ -1,10 +1,11 @@
 <template>
   <div class="auth-buttons">
+    <img src="../icon/logo.svg" @click="home" alt="Logo" class="logo" />
     <button v-if="isAuthenticated" @click="logout" class="btn">Logout</button>
     <button v-if="!isAuthenticated" @click="goToLogin" class="btn">Login</button>
     <button v-if="!isAuthenticated" @click="goToRegister" class="btn">Register</button>
     <button v-else @click="goToProfile" class="btn">Profile</button>
-    <button @click="goToCart" class="btn">Cart</button>
+    <button v-if="isAuthenticated" @click="goToCart" class="btn">Cart</button>
   </div>
 </template>
 
@@ -16,9 +17,9 @@ import Cookies from 'js-cookie'
 export default defineComponent({
   setup() {
     const router = useRouter()
-
     const isAuthenticated = !!Cookies.get('access_token')
 
+    const home = () => router.push('/')
     const goToLogin = () => router.push('/login')
     const goToRegister = () => router.push('/register')
     const goToProfile = () => router.push('/profile')
@@ -32,6 +33,7 @@ export default defineComponent({
 
     return {
       isAuthenticated,
+      home,
       goToLogin,
       goToRegister,
       goToProfile,
@@ -44,28 +46,33 @@ export default defineComponent({
 
 <style scoped>
 .auth-buttons {
+  width: 100%;
   display: flex;
+  padding: 10px;
   gap: 10px;
+  margin-bottom: 20px;
   justify-content: center;
-  margin-top: 20px;
 }
 
 .btn {
   padding: 10px 20px;
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 20px;
-  color: #333;
+  background-color: #007bff;
+  border-radius: 5px;
+  color: white;
   font-size: 16px;
   cursor: pointer;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+  outline: none;
+  border: none;
 }
 
 .btn:hover {
-  background-color: #d8e2dc;
-  color: #000;
+  background-color: #0056b3;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  margin-right: auto;
 }
 </style>
