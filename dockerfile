@@ -6,6 +6,8 @@ COPY . .
 
 RUN rm -rf package-lock.json node_modules && npm install
 
+RUN npm run build
+
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
