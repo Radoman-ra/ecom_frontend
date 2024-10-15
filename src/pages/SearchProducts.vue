@@ -270,7 +270,7 @@ export default defineComponent({
             price: number
             quantity: number
             description: string
-            photo_path: string
+            photo_path?: string
           }) => ({
             ...product,
             availableQuantity: product.quantity,
@@ -338,7 +338,7 @@ export default defineComponent({
       price: number
       availableQuantity: number
       description: string
-      photo_path: string
+      photo_path?: string
     }) {
       this.selectedProduct = {
         ...product,
