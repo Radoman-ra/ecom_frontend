@@ -323,7 +323,7 @@ input[type='number']::-webkit-inner-spin-button {
   margin-right: 5px;
 }
 
-.quantity-button + {
+.quantity-button {
   margin: 0 5px;
 }
 
