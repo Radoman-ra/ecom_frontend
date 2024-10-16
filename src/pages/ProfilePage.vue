@@ -167,7 +167,7 @@ export default defineComponent({
         }
 
         const response = await axios.get(
-          'https://ecombackend-production-7935.up.railway.appapi/orders/my-orders',
+          'https://ecombackend-production-7935.up.railway.app/api/orders/my-orders',
           {
             params,
             headers: {
@@ -191,23 +191,23 @@ export default defineComponent({
     async fetchProductDetails(product: any) {
       try {
         const productResponse = await axios.get(
-          `https://ecombackend-production-7935.up.railway.appapi/products/${product.product_id}`
+          `https://ecombackend-production-7935.up.railway.app/api/products/${product.product_id}`
         )
         const productDetails = productResponse.data
 
         const categoryResponse = await axios.get(
-          `https://ecombackend-production-7935.up.railway.appapi/categories/${productDetails.category_id}`
+          `https://ecombackend-production-7935.up.railway.app/api/categories/${productDetails.category_id}`
         )
         const categoryDetails = categoryResponse.data
 
         const supplierResponse = await axios.get(
-          `https://ecombackend-production-7935.up.railway.appapi/suppliers/${productDetails.supplier_id}`
+          `https://ecombackend-production-7935.up.railway.app/api/suppliers/${productDetails.supplier_id}`
         )
         const supplierDetails = supplierResponse.data
 
         product.details = {
           ...productDetails,
-          imageUrl: `https://ecombackend-production-7935.up.railway.appstatic/images/100x100/${productDetails.photo_path}`,
+          imageUrl: `https://ecombackend-production-7935.up.railway.app/static/images/100x100/${productDetails.photo_path}`,
           category: categoryDetails,
           supplier: supplierDetails
         }
@@ -229,7 +229,7 @@ export default defineComponent({
 
       try {
         const response = await axios.post(
-          `https://ecombackend-production-7935.up.railway.appapi/auth/refresh`,
+          `https://ecombackend-production-7935.up.railway.app/api/auth/refresh`,
           {},
           {
             params: {

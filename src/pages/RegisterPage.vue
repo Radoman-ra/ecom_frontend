@@ -117,7 +117,7 @@ export default defineComponent({
       }
 
       try {
-        await axios.post('https://ecombackend-production-7935.up.railway.appapi/auth/register', {
+        await axios.post('https://ecombackend-production-7935.up.railway.app/api/auth/register', {
           username: this.username,
           email: this.email,
           password: this.password

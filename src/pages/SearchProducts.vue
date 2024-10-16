@@ -259,7 +259,7 @@ export default defineComponent({
 
       try {
         const response = await axios.get(
-          'https://ecombackend-production-7935.up.railway.appapi/search/products',
+          'https://ecombackend-production-7935.up.railway.app/api/search/products',
           { params }
         )
 
@@ -274,8 +274,8 @@ export default defineComponent({
           }) => ({
             ...product,
             availableQuantity: product.quantity,
-            lowQltyImgUrl: `https://ecombackend-production-7935.up.railway.appstatic/images/10x10/${product.photo_path}`,
-            imageUrl: `https://ecombackend-production-7935.up.railway.appstatic/images/500x500/${product.photo_path}`,
+            lowQltyImgUrl: `https://ecombackend-production-7935.up.railway.app/static/images/10x10/${product.photo_path}`,
+            imageUrl: `https://ecombackend-production-7935.up.railway.app/static/images/500x500/${product.photo_path}`,
             description: product.description
           })
         )

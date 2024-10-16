@@ -77,7 +77,7 @@ export default defineComponent({
       isSubmitting.value = true
       try {
         const response = await axios.post(
-          'https://ecombackend-production-7935.up.railway.appapi/auth/login',
+          'https://ecombackend-production-7935.up.railway.app/api/auth/login',
           {
             email: email.value,
             password: password.value
