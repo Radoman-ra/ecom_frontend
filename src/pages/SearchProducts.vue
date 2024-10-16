@@ -196,9 +196,10 @@ import { defineComponent, reactive, ref } from 'vue'
 import axios from 'axios'
 import HomeButtons from './HomeButtons.vue'
 
-function debounce(func: Function, wait: number) {
-  let timeout: number | undefined
-  return function (...args: any[]) {
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | undefined
+
+  return function (this: any, ...args: Parameters<T>) {
     clearTimeout(timeout)
     timeout = setTimeout(() => func.apply(this, args), wait)
   }
@@ -294,7 +295,8 @@ export default defineComponent({
         console.error('Error fetching products:', error)
       }
     },
-    debounceSearchProducts: debounce(function () {
+
+    debounceSearchProducts: debounce(function (this: any) {
       this.searchProducts()
     }, 500),
 
