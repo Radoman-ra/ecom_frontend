@@ -192,11 +192,10 @@ import { defineComponent, reactive, ref } from 'vue'
 import axios from 'axios'
 import HomeButtons from './HomeButtons.vue'
 
-// Функция для создания debounce, обертка для this
-function debounce(func: Function, wait: number) {
-  let timeout: number | undefined
-  return function (this: any, ...args: any[]) {
-    const context = this // сохраняем контекст
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | undefined
+
+  return function (this: any, ...args: Parameters<T>) {
     clearTimeout(timeout)
     timeout = setTimeout(() => func.apply(context, args), wait)
   }
@@ -292,7 +291,8 @@ export default defineComponent({
         }
       }
     },
-    debounceSearchProducts: debounce(function () {
+
+    debounceSearchProducts: debounce(function (this: any) {
       this.searchProducts()
     }, 500),
     goToPage(page: number) {

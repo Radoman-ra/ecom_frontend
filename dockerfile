@@ -8,6 +8,6 @@ RUN rm -rf package-lock.json node_modules && npm install
 
 RUN npm run build
 
-EXPOSE 5173
+EXPOSE 4173
 
 CMD ["npm", "start"]
