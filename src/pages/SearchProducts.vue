@@ -188,7 +188,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, reactive } from 'vue'
 import axios from 'axios'
 import HomeButtons from './HomeButtons.vue'
 
@@ -197,7 +197,7 @@ function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
 
   return function (this: any, ...args: Parameters<T>) {
     clearTimeout(timeout)
-    timeout = setTimeout(() => func.apply(context, args), wait)
+    timeout = setTimeout(() => func.apply(this, args), wait)
   }
 }
 
