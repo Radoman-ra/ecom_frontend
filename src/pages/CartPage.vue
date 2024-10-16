@@ -11,7 +11,7 @@
         <ul v-else class="cart-list">
           <li v-for="item in cartItems" :key="item.id" class="cart-item">
             <img
-              :src="`http://127.0.0.1:8000/static/images/500x500/${item.photo_path}`"
+              :src="`https://ecombackend-production-7935.up.railway.appstatic/images/500x500/${item.photo_path}`"
               alt="Product Image"
               class="cart-image"
             />
@@ -143,14 +143,17 @@ export default defineComponent({
       console.log('JWT token:', token)
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/orders/', {
-          method: 'POST',
-          headers: {
-            Authorization: `${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(order)
-        })
+        const response = await fetch(
+          'https://ecombackend-production-7935.up.railway.appapi/orders/',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(order)
+          }
+        )
 
         console.log('Response status:', response.status)
         console.log('Response headers:', response.headers)
@@ -186,7 +189,7 @@ export default defineComponent({
       try {
         const productIds = cartItems.value.map((item: { id: number }) => item.id).join(',')
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/products/available-quantities?ids=${productIds}`
+          `https://ecombackend-production-7935.up.railway.appapi/products/available-quantities?ids=${productIds}`
         )
 
         response.data.forEach((product: { id: number; quantity: number }) => {

@@ -157,7 +157,6 @@
               class="modal-product-image"
               :class="{ blurred: loading }"
             />
-            <!-- <img :src="selectedProduct.imageUrl" alt="Product Image" class="modal-product-image" /> -->
             <div class="modal-info">
               <h2 class="modal-title">{{ selectedProduct.name }}</h2>
               <p class="modal-price">${{ selectedProduct.price }}</p>
@@ -178,9 +177,6 @@
                   class="btn add-cart-btn"
                 >
                   <div>Add to Cart</div>
-                  <!-- <div v-if="getCartQuantity(selectedProduct.id) > 0" class="add_to_cart_button">
-                    {{ getCartQuantity(selectedProduct.id) }}
-                  </div> -->
                 </button>
               </div>
             </div>
@@ -196,11 +192,13 @@ import { defineComponent, reactive, ref } from 'vue'
 import axios from 'axios'
 import HomeButtons from './HomeButtons.vue'
 
+// Функция для создания debounce, обертка для this
 function debounce(func: Function, wait: number) {
   let timeout: number | undefined
-  return function (...args: any[]) {
+  return function (this: any, ...args: any[]) {
+    const context = this // сохраняем контекст
     clearTimeout(timeout)
-    timeout = setTimeout(() => func.apply(this, args), wait)
+    timeout = setTimeout(() => func.apply(context, args), wait)
   }
 }
 
@@ -261,7 +259,10 @@ export default defineComponent({
       if (this.maxPrice) params.max_price = this.maxPrice
 
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/search/products', { params })
+        const response = await axios.get(
+          'https://ecombackend-production-7935.up.railway.appapi/search/products',
+          { params }
+        )
 
         this.products = response.data.products.map(
           (product: {
@@ -274,8 +275,8 @@ export default defineComponent({
           }) => ({
             ...product,
             availableQuantity: product.quantity,
-            lowQltyImgUrl: `http://127.0.0.1:8000/static/images/10x10/${product.photo_path}`,
-            imageUrl: `http://127.0.0.1:8000/static/images/500x500/${product.photo_path}`,
+            lowQltyImgUrl: `https://ecombackend-production-7935.up.railway.appstatic/images/10x10/${product.photo_path}`,
+            imageUrl: `https://ecombackend-production-7935.up.railway.appstatic/images/500x500/${product.photo_path}`,
             description: product.description
           })
         )
@@ -286,78 +287,43 @@ export default defineComponent({
       } catch (error: any) {
         if (error.response && error.response.status === 404) {
           this.errorMessage = 'No products found matching the criteria'
-          this.products = []
-          this.totalPages = 0
         } else {
-          this.errorMessage = 'An error occurred while fetching products'
+          this.errorMessage = 'Error fetching products'
         }
-        console.error('Error fetching products:', error)
       }
     },
     debounceSearchProducts: debounce(function () {
       this.searchProducts()
     }, 500),
-
-    async nextPage() {
+    goToPage(page: number) {
+      this.currentPage = page
+      this.debounceSearchProducts()
+    },
+    nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
-        await this.searchProducts()
+        this.debounceSearchProducts()
       }
     },
-    async prevPage() {
+    prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--
-        await this.searchProducts()
+        this.debounceSearchProducts()
       }
     },
-    async goToPage(page: number) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page
-        await this.searchProducts()
-      }
-    },
-    addToCart(product: { id: number; name: string; price: number; availableQuantity: number }) {
-      const existingItem = this.cart.find((item: { id: number }) => item.id === product.id)
-      if (existingItem) {
-        if (existingItem.quantity < product.availableQuantity) existingItem.quantity++
-        else alert(`Cannot add more than available quantity: ${product.availableQuantity}`)
-      } else {
-        if (1 <= product.availableQuantity) this.cart.push({ ...product, quantity: 1 })
-        else alert(`Cannot add more than available quantity: ${product.availableQuantity}`)
-      }
-      localStorage.setItem('cart', JSON.stringify(this.cart))
-      this.cart = reactive(JSON.parse(localStorage.getItem('cart') || '[]'))
-    },
-    getCartQuantity(productId: number): number {
-      const item = this.cart.find((item: { id: number }) => item.id === productId)
-      return item ? item.quantity : 0
-    },
-    openModal(product: {
-      id: number
-      name: string
-      price: number
-      availableQuantity: number
-      description: string
-      photo_path?: string
-    }) {
-      this.selectedProduct = {
-        ...product,
-        lowQltyImgUrl: `http://127.0.0.1:8000/static/images/10x10/${product.photo_path}`,
-        imageUrl: `http://127.0.0.1:8000/static/images/1000x1000/${product.photo_path}`
-      }
+    openModal(product: any) {
+      this.selectedProduct = product
       this.showModal = true
     },
     closeModal() {
       this.showModal = false
-      this.selectedProduct = {} as {
-        id: number
-        name: string
-        price: number
-        availableQuantity: number
-        description: string
-        lowQltyImgUrl: string
-        imageUrl: string
-      }
+    },
+    addToCart(product: any) {
+      this.cart.push(product)
+      localStorage.setItem('cart', JSON.stringify(this.cart))
+    },
+    getCartQuantity(productId: number) {
+      return this.cart.filter((p: any) => p.id === productId).length
     }
   },
   mounted() {

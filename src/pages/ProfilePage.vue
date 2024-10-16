@@ -166,12 +166,15 @@ export default defineComponent({
           params.status = this.selectedStatus
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/orders/my-orders', {
-          params,
-          headers: {
-            Authorization: `${token}`
+        const response = await axios.get(
+          'https://ecombackend-production-7935.up.railway.appapi/orders/my-orders',
+          {
+            params,
+            headers: {
+              Authorization: `${token}`
+            }
           }
-        })
+        )
         const orders = response.data.orders
         this.orders = orders
         this.totalPages = response.data.total_pages
@@ -188,23 +191,23 @@ export default defineComponent({
     async fetchProductDetails(product: any) {
       try {
         const productResponse = await axios.get(
-          `http://127.0.0.1:8000/api/products/${product.product_id}`
+          `https://ecombackend-production-7935.up.railway.appapi/products/${product.product_id}`
         )
         const productDetails = productResponse.data
 
         const categoryResponse = await axios.get(
-          `http://127.0.0.1:8000/api/categories/${productDetails.category_id}`
+          `https://ecombackend-production-7935.up.railway.appapi/categories/${productDetails.category_id}`
         )
         const categoryDetails = categoryResponse.data
 
         const supplierResponse = await axios.get(
-          `http://127.0.0.1:8000/api/suppliers/${productDetails.supplier_id}`
+          `https://ecombackend-production-7935.up.railway.appapi/suppliers/${productDetails.supplier_id}`
         )
         const supplierDetails = supplierResponse.data
 
         product.details = {
           ...productDetails,
-          imageUrl: `http://127.0.0.1:8000/static/images/100x100/${productDetails.photo_path}`,
+          imageUrl: `https://ecombackend-production-7935.up.railway.appstatic/images/100x100/${productDetails.photo_path}`,
           category: categoryDetails,
           supplier: supplierDetails
         }
@@ -226,7 +229,7 @@ export default defineComponent({
 
       try {
         const response = await axios.post(
-          `http://127.0.0.1:8000/api/auth/refresh`,
+          `https://ecombackend-production-7935.up.railway.appapi/auth/refresh`,
           {},
           {
             params: {

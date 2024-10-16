@@ -76,10 +76,13 @@ export default defineComponent({
 
       isSubmitting.value = true
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/auth/login', {
-          email: email.value,
-          password: password.value
-        })
+        const response = await axios.post(
+          'https://ecombackend-production-7935.up.railway.appapi/auth/login',
+          {
+            email: email.value,
+            password: password.value
+          }
+        )
 
         const { access_token, refresh_token } = response.data
 
