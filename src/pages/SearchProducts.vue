@@ -192,6 +192,10 @@ import { defineComponent, reactive } from 'vue'
 import axios from 'axios'
 import HomeButtons from './HomeButtons.vue'
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL
+// const apiUrl = process.env.VITE_BACKEND_URL
+console.log({ apiUrl })
+
 function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout> | undefined
 
@@ -241,6 +245,7 @@ export default defineComponent({
       cart: reactive(JSON.parse(localStorage.getItem('cart') || '[]'))
     }
   },
+
   methods: {
     async searchProducts() {
       this.errorMessage = ''
@@ -258,10 +263,7 @@ export default defineComponent({
       if (this.maxPrice) params.max_price = this.maxPrice
 
       try {
-        const response = await axios.get(
-          'https://ecombackend-production-7935.up.railway.app/api/search/products',
-          { params }
-        )
+        const response = await axios.get(`${apiUrl}/api/search/products`, { params })
 
         this.products = response.data.products.map(
           (product: {
@@ -274,8 +276,8 @@ export default defineComponent({
           }) => ({
             ...product,
             availableQuantity: product.quantity,
-            lowQltyImgUrl: `https://ecombackend-production-7935.up.railway.app/static/images/10x10/${product.photo_path}`,
-            imageUrl: `https://ecombackend-production-7935.up.railway.app/static/images/500x500/${product.photo_path}`,
+            lowQltyImgUrl: `${apiUrl}/static/images/10x10/${product.photo_path}`,
+            imageUrl: `${apiUrl}/static/images/500x500/${product.photo_path}`,
             description: product.description
           })
         )
