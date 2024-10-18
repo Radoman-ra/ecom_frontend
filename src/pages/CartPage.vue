@@ -140,7 +140,6 @@ export default defineComponent({
       }
 
       const token = getAccessToken()
-      console.log('JWT token:', token)
 
       try {
         const response = await fetch(
@@ -154,9 +153,6 @@ export default defineComponent({
             body: JSON.stringify(order)
           }
         )
-
-        console.log('Response status:', response.status)
-        console.log('Response headers:', response.headers)
 
         const responseData = await response.json().catch(() => null)
         console.log('Response body:', responseData)

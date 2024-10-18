@@ -74,7 +74,7 @@
                 <img
                   :src="loading ? product.lowQltyImgUrl : product.imageUrl"
                   alt="Product Image"
-                  @load="loading = false"
+                  @load="product.loading = false"
                   class="product-image"
                   :class="{ blurred: loading }"
                 />
@@ -154,7 +154,7 @@
               :src="loading ? selectedProduct.lowQltyImgUrl : selectedProduct.imageUrl"
               alt="Product Image"
               @load="loading = false"
-              class="modal-product-image"
+              class="product.loading = false"
               :class="{ blurred: loading }"
             />
             <div class="modal-info">
@@ -222,6 +222,7 @@ export default defineComponent({
         availableQuantity: number
         lowQltyImgUrl: string
         imageUrl: string
+        loading: boolean
         description: string
       }>,
       currentPage: 1,
@@ -237,6 +238,7 @@ export default defineComponent({
         description: string
         imageUrl: string
         lowQltyImgUrl: string
+        loading: true
       },
       cart: reactive(JSON.parse(localStorage.getItem('cart') || '[]'))
     }
