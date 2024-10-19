@@ -194,3 +194,6 @@ pnpm-debug.log*
 *.sw?
 images/
 node_modules
+*.vue.js
+index.js
+main.js

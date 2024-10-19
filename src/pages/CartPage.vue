@@ -66,7 +66,7 @@ export default defineComponent({
   setup() {
     const router = useRouter()
     const cartItems = ref(JSON.parse(localStorage.getItem('cart') || '[]'))
-    const timeoutIds = ref<number[]>([])
+    const timeoutIds = ref<ReturnType<typeof setTimeout>[]>([])
 
     const totalPrice = computed(() => {
       return cartItems.value.reduce(
@@ -108,7 +108,7 @@ export default defineComponent({
       timeoutIds.value.forEach((id) => clearTimeout(id))
       timeoutIds.value = []
 
-      const timeoutId = setTimeout(() => {
+      let timeoutId = setTimeout(() => {
         if (item.quantity < 1) {
           item.quantity = 1
         } else if (item.quantity > item.availableQuantity) {
@@ -117,6 +117,7 @@ export default defineComponent({
         updateLocalStorage()
       }, 500)
 
+      timeoutId = setTimeout(() => {}) as ReturnType<typeof setTimeout>
       timeoutIds.value.push(timeoutId)
     }
 
@@ -135,7 +136,7 @@ export default defineComponent({
       const getAccessToken = () => {
         const cookieString = document.cookie
         const cookies = cookieString.split('; ')
-        const tokenCookie = cookies.find((cookie) => cookie.startsWith('access_token='))
+        const tokenCookie = cookies.find((cookie: string) => cookie.startsWith('access_token='))
         return tokenCookie ? tokenCookie.split('=')[1] : null
       }
 
