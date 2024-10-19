@@ -21,9 +21,10 @@
         :class="{ 'input-error': passwordError }"
       />
       <div v-if="passwordError" class="error-message">{{ passwordError }}</div>
-
-      <button type="submit" class="btn btn-login" :disabled="isSubmitting">Login</button>
-      <button type="button" class="btn btn-register" @click="goToRegister">Register</button>
+      <div class="reg-and-log-but">
+        <button type="submit" class="btn btn-login" :disabled="isSubmitting">Login</button>
+        <button type="button" class="btn btn-register" @click="goToRegister">Register</button>
+      </div>
 
       <button type="button" class="btn btn-google" @click="loginWithGoogle">
         <svg
@@ -57,6 +58,7 @@ import { defineComponent, ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import Cookies from 'js-cookie'
+const apiUrl = import.meta.env.VITE_BACKEND_URL
 
 export default defineComponent({
   setup() {
@@ -96,13 +98,10 @@ export default defineComponent({
 
       isSubmitting.value = true
       try {
-        const response = await axios.post(
-          'https://ecombackend-production-7935.up.railway.app/api/auth/login',
-          {
-            email: email.value,
-            password: password.value
-          }
-        )
+        const response = await axios.post(`${apiUrl}/api/auth/login`, {
+          email: email.value,
+          password: password.value
+        })
 
         const { access_token, refresh_token } = response.data
 
@@ -130,8 +129,7 @@ export default defineComponent({
     }
 
     const loginWithGoogle = async () => {
-      window.location.href =
-        'https://ecombackend-production-7935.up.railway.app/api/auth/login/google'
+      window.location.href = `${apiUrl}/api/auth/login/google`
     }
 
     const goToRegister = () => {
@@ -154,6 +152,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.reg-and-log-but {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reg-and-log-but button {
+  flex: 1;
+}
+
 .btn-google {
   background-color: #db4437;
   color: white;
@@ -206,7 +214,7 @@ export default defineComponent({
 .btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 20px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
