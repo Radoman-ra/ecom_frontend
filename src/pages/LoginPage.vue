@@ -25,6 +25,11 @@
       <button type="submit" class="btn btn-login" :disabled="isSubmitting">Login</button>
       <button type="button" class="btn btn-register" @click="goToRegister">Register</button>
 
+      <button type="button" class="btn btn-google" @click="loginWithGoogle">
+        <img src="@/assets/google-icon.png" alt="Google icon" class="google-icon" />
+        Login with Google
+      </button>
+
       <transition name="fade">
         <div v-if="loginError" class="login-error">{{ loginError }}</div>
       </transition>
@@ -109,6 +114,11 @@ export default defineComponent({
       }
     }
 
+    const loginWithGoogle = async () => {
+      window.location.href =
+        'https://ecombackend-production-7935.up.railway.app/api/auth/login/google'
+    }
+
     const goToRegister = () => {
       router.push('/register')
     }
@@ -119,6 +129,7 @@ export default defineComponent({
       emailError,
       passwordError,
       login,
+      loginWithGoogle,
       goToRegister,
       loginError,
       isSubmitting
@@ -128,99 +139,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.login-page {
+.btn-google {
+  background-color: #db4437;
+  color: white;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
-.login-form {
-  max-width: 220px;
-  display: flex;
-  flex-direction: column;
   gap: 10px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.input-field {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 15px;
-  width: 200px;
-}
-
-.input-error {
-  border-color: #dc3545;
-}
-
-.error-message {
-  color: #dc3545;
-  font-size: 0.85rem;
-}
-
-.btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-login {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-login:disabled {
-  background-color: #c0c0c0;
-  cursor: not-allowed;
-}
-
-.btn-login:hover:enabled {
-  background-color: #0056b3;
-}
-
-.btn-register {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn-register:hover {
-  background-color: #5a6268;
-}
-
-.login-error {
-  background-color: #dc3545;
-  color: white;
-  padding: 10px;
-  border-radius: 10px;
-  margin-top: 10px;
-  text-align: center;
-  font-weight: bold;
-  animation: fade-in 0.5s;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.google-icon {
+  width: 20px;
+  height: 20px;
 }
 </style>
