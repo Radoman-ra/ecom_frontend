@@ -159,7 +159,7 @@ export default defineComponent({
         }
 
         const response = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/profile/avatar`,
+          `${import.meta.env.VITE_BACKEND_URL}/profile/avatar/upload`,
           formData,
           {
             headers: {
