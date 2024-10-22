@@ -6,8 +6,16 @@
       </div>
     </div>
     <div class="profile-container">
+      <div class="avatar-section">
+        <h2>Profile Avatar</h2>
+        <div class="avatar-preview">
+          <img :src="avatarUrl" alt="Profile Avatar" v-if="avatarUrl" class="avatar-image" />
+          <p v-else>No avatar uploaded</p>
+        </div>
+        <input type="file" @change="onAvatarChange" accept="image/*" class="avatar-upload" />
+        <button class="upload-button" @click="uploadAvatar">Upload Avatar</button>
+      </div>
       <h1 v-if="orders.length > 0">My Orders</h1>
-      <!-- Display the filter only if there are orders -->
       <form class="filter-form" v-if="orders.length > 0" @submit.prevent="fetchOrders">
         <div class="order-filter">
           <label for="status">Order Status:</label>
@@ -24,7 +32,6 @@
 
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-      <!-- If there are orders, show them; otherwise, show a no orders message -->
       <div v-if="orders.length && !errorMessage" class="orders-list">
         <ul>
           <li v-for="order in orders" :key="order.id" class="order-card">
@@ -77,12 +84,10 @@
         </ul>
       </div>
 
-      <!-- Display no orders message if the orders list is empty -->
       <div v-else class="error">
         <p>You have no orders yet.</p>
       </div>
 
-      <!-- Pagination only if there are orders -->
       <div v-if="orders.length > 0" class="pagination">
         <button class="pagination-prev-button" @click="prevPage" :disabled="currentPage === 1">
           &#8592;
@@ -103,7 +108,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 import HomeButtons from './HomeButtons.vue'
 
 export default defineComponent({
@@ -121,19 +125,79 @@ export default defineComponent({
       currentPage: 1,
       totalPages: 0,
       errorMessage: '',
-      selectedStatus: ''
+      selectedStatus: '',
+      avatarUrl: '',
+      avatarFile: null
     }
-  },
-  setup() {
-    const router = useRouter()
-
-    const goHome = () => {
-      router.push('/')
-    }
-
-    return { goHome }
   },
   methods: {
+    onAvatarChange(event: any) {
+      const file = event.target.files[0]
+      if (file) {
+        this.avatarFile = file
+        this.avatarUrl = URL.createObjectURL(file)
+      }
+    },
+    async uploadAvatar() {
+      if (!this.avatarFile) {
+        this.errorMessage = 'Please select an avatar to upload.'
+        return
+      }
+
+      try {
+        const formData = new FormData()
+        formData.append('avatar', this.avatarFile)
+
+        let token = this.getCookie('access_token')
+        if (!token) {
+          await this.refreshToken()
+          token = this.getCookie('access_token')
+          if (!token) {
+            this.errorMessage = 'Authorization failed. Please log in again.'
+            return
+          }
+        }
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/profile/avatar`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `${token}`
+            }
+          }
+        )
+
+        this.avatarUrl = response.data.avatarUrl
+        this.errorMessage = ''
+        alert('Avatar uploaded successfully!')
+      } catch (error: any) {
+        this.errorMessage = 'Failed to upload avatar. Please try again.'
+      }
+    },
+    async fetchAvatar() {
+      let token = this.getCookie('access_token')
+      if (!token) {
+        await this.refreshToken()
+        token = this.getCookie('access_token')
+        if (!token) {
+          this.errorMessage = 'Authorization failed. Please log in again.'
+          return
+        }
+      }
+
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/profile/avatar`, {
+          headers: {
+            Authorization: `${token}`
+          }
+        })
+        this.avatarUrl = response.data.avatarUrl
+      } catch (error: any) {
+        console.error('Failed to fetch avatar', error)
+      }
+    },
     getCookie(name: string): string | null {
       const value = `; ${document.cookie}`
       const parts = value.split(`; ${name}=`)
@@ -167,7 +231,7 @@ export default defineComponent({
         }
 
         const response = await axios.get(
-          'https://ecombackend-production-7935.up.railway.app/api/orders/my-orders',
+          `${import.meta.env.VITE_BACKEND_URL}/api/orders/my-orders`,
           {
             params,
             headers: {
@@ -191,23 +255,23 @@ export default defineComponent({
     async fetchProductDetails(product: any) {
       try {
         const productResponse = await axios.get(
-          `https://ecombackend-production-7935.up.railway.app/api/products/${product.product_id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/products/${product.product_id}`
         )
         const productDetails = productResponse.data
 
         const categoryResponse = await axios.get(
-          `https://ecombackend-production-7935.up.railway.app/api/categories/${productDetails.category_id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/categories/${productDetails.category_id}`
         )
         const categoryDetails = categoryResponse.data
 
         const supplierResponse = await axios.get(
-          `https://ecombackend-production-7935.up.railway.app/api/suppliers/${productDetails.supplier_id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${productDetails.supplier_id}`
         )
         const supplierDetails = supplierResponse.data
 
         product.details = {
           ...productDetails,
-          imageUrl: `https://ecombackend-production-7935.up.railway.app/static/images/100x100/${productDetails.photo_path}`,
+          imageUrl: `${import.meta.env.VITE_BACKEND_URL}/static/images/100x100/${productDetails.photo_path}`,
           category: categoryDetails,
           supplier: supplierDetails
         }
@@ -229,7 +293,7 @@ export default defineComponent({
 
       try {
         const response = await axios.post(
-          `https://ecombackend-production-7935.up.railway.app/api/auth/refresh`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/refresh`,
           {},
           {
             params: {
@@ -284,9 +348,9 @@ export default defineComponent({
       }
     }
   },
-
   mounted() {
     this.fetchOrders()
+    this.fetchAvatar()
   }
 })
 </script>
@@ -498,5 +562,38 @@ export default defineComponent({
   margin-top: 6rem;
   max-width: 800px;
   width: 80%;
+}
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.avatar-preview {
+  margin-bottom: 10px;
+}
+
+.avatar-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-upload {
+  margin-bottom: 10px;
+}
+
+.upload-button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: #dfe7ec;
+  border: none;
+  cursor: pointer;
+}
+
+.upload-button:hover {
+  background-color: #cfd7e3;
 }
 </style>
