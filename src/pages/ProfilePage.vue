@@ -164,7 +164,7 @@ export default defineComponent({
           {
             headers: {
               'Content-Type': 'multipart/form-data',
-              Authorization: `${token}`
+              Authorization: `Bearer ${token}`
             }
           }
         )
@@ -172,6 +172,7 @@ export default defineComponent({
         this.avatarUrl = response.data.avatarUrl
         this.errorMessage = ''
         alert('Avatar uploaded successfully!')
+        this.avatarUrl = `${import.meta.env.VITE_BACKEND_URL}${response.data.avatarUrl}`
       } catch (error: any) {
         this.errorMessage = 'Failed to upload avatar. Please try again.'
       }
