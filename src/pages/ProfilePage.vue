@@ -125,12 +125,12 @@ export default defineComponent({
       errorMessage: '',
       selectedStatus: '',
       avatarUrl: '',
-      avatarFile: null
+      avatarFile: null as File | null
     }
   },
   methods: {
-    onAvatarChange(event) {
-      const file = event.target.files[0]
+    onAvatarChange(event: Event) {
+      const file = (event.target as HTMLInputElement).files?.[0]
       if (file) {
         this.avatarFile = file
         this.avatarUrl = URL.createObjectURL(file)
@@ -142,7 +142,7 @@ export default defineComponent({
         return
       }
       const formData = new FormData()
-      formData.append('avatar', this.avatarFile)
+      formData.append('avatar', this.avatarFile!)
 
       try {
         const token = this.getCookie('access_token')
