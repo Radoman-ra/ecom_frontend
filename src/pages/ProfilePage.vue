@@ -7,13 +7,11 @@
     </div>
     <div class="profile-container">
       <div class="avatar-section">
-        <h2>Profile Avatar</h2>
-        <div class="avatar-preview">
-          <img :src="avatarUrl" alt="Profile Avatar" v-if="avatarUrl" class="avatar-image" />
-          <p v-else>No avatar uploaded</p>
-        </div>
-        <input type="file" @change="onAvatarChange" accept="image/*" class="avatar-upload" />
-        <button class="upload-button" @click="uploadAvatar">Upload Avatar</button>
+        <img :src="avatarUrl" alt="Profile Avatar" v-if="avatarUrl" />
+        <p v-else>No avatar uploaded</p>
+        <input type="file" @change="onAvatarChange" accept="image/*" />
+        <button @click="uploadAvatar">Upload Avatar</button>
+        <p v-if="errorMessage">{{ errorMessage }}</p>
       </div>
       <h1 v-if="orders.length > 0">My Orders</h1>
       <form class="filter-form" v-if="orders.length > 0" @submit.prevent="fetchOrders">
@@ -131,7 +129,7 @@ export default defineComponent({
     }
   },
   methods: {
-    onAvatarChange(event: any) {
+    onAvatarChange(event) {
       const file = event.target.files[0]
       if (file) {
         this.avatarFile = file
@@ -140,41 +138,29 @@ export default defineComponent({
     },
     async uploadAvatar() {
       if (!this.avatarFile) {
-        this.errorMessage = 'Please select an avatar to upload.'
+        this.errorMessage = 'Please select an image file.'
         return
       }
+      const formData = new FormData()
+      formData.append('avatar', this.avatarFile)
 
       try {
-        const formData = new FormData()
-        formData.append('avatar', this.avatarFile)
-
-        let token = this.getCookie('access_token')
-        if (!token) {
-          await this.refreshToken()
-          token = this.getCookie('access_token')
-          if (!token) {
-            this.errorMessage = 'Authorization failed. Please log in again.'
-            return
-          }
-        }
-
+        const token = this.getCookie('access_token')
         const response = await axios.post(
           `${import.meta.env.VITE_BACKEND_URL}/api/profile/avatar/upload`,
           formData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
             }
           }
         )
-
-        this.avatarUrl = response.data.avatarUrl
+        this.avatarUrl = response.data.avatar_url
         this.errorMessage = ''
         alert('Avatar uploaded successfully!')
-        this.avatarUrl = `${import.meta.env.VITE_BACKEND_URL}${response.data.avatarUrl}`
-      } catch (error: any) {
-        this.errorMessage = 'Failed to upload avatar. Please try again.'
+      } catch (error) {
+        this.errorMessage = 'Failed to upload avatar.'
       }
     },
     async fetchAvatar() {
