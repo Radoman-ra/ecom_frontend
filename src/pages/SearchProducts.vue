@@ -321,7 +321,12 @@ export default defineComponent({
       this.showModal = false
     },
     addToCart(product: any) {
-      this.cart.push(product)
+      const cartItem = this.cart.find((item: any) => item.id === product.id)
+      if (!cartItem) {
+        this.cart.push({ ...product, quantity: 1 })
+      } else {
+        cartItem.quantity += 1
+      }
       localStorage.setItem('cart', JSON.stringify(this.cart))
     },
     getCartQuantity(productId: number) {

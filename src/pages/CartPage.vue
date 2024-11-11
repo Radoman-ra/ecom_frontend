@@ -10,20 +10,13 @@
         <div v-if="cartItems.length === 0" class="no_items">Your cart is empty.</div>
         <ul v-else class="cart-list">
           <li v-for="item in cartItems" :key="item.id" class="cart-item">
-            <img
-              :src="`https://ecombackend-production-7935.up.railway.app/static/images/500x500/${item.photo_path}`"
-              alt="Product Image"
-              class="cart-image"
-            />
+            <img :src="getImageUrl(item.photo_path)" alt="Product Image" class="cart-image" />
             <div class="cart-details">
               <div class="item-name">{{ item.name }}</div>
               <div class="item-description">{{ item.description }}</div>
-
               <div class="item-price">{{ item.price }}$</div>
               <div class="quantity-controls">
-                <button class="quantity-button quantity-button-" @click="decreaseQuantity(item)">
-                  -
-                </button>
+                <button class="quantity-button" @click="decreaseQuantity(item)">-</button>
                 <input
                   type="number"
                   v-model.number="item.quantity"
@@ -53,166 +46,88 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+<script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import HomeButtons from './HomeButtons.vue'
 
-export default defineComponent({
-  components: {
-    HomeButtons
-  },
-  setup() {
-    const router = useRouter()
-    const cartItems = ref(JSON.parse(localStorage.getItem('cart') || '[]'))
-    const timeoutIds = ref<ReturnType<typeof setTimeout>[]>([])
+const cartItems = ref([])
+const timeoutIds = ref([])
 
-    const totalPrice = computed(() => {
-      return cartItems.value.reduce(
-        (acc: number, item: { price: number; quantity: number }) =>
-          acc + item.price * item.quantity,
-        0
-      )
-    })
+const router = useRouter()
 
-    const removeFromCart = (id: number) => {
-      const updatedCart = cartItems.value.filter((item: { id: number }) => item.id !== id)
-      localStorage.setItem('cart', JSON.stringify(updatedCart))
-      cartItems.value = updatedCart
-    }
+const goHome = () => {
+  router.push('/')
+}
 
-    const increaseQuantity = (item: {
-      id: number
-      quantity: number
-      availableQuantity: number
-    }) => {
-      if (item.quantity < item.availableQuantity) {
-        item.quantity++
-        updateLocalStorage()
-      }
-    }
+const getImageUrl = (path) => {
+  return `http://127.0.0.1:8000/images/${path}`
+}
 
-    const decreaseQuantity = (item: { id: number; quantity: number }) => {
-      if (item.quantity > 1) {
-        item.quantity--
-        updateLocalStorage()
-      }
-    }
-
-    const updateLocalStorage = () => {
-      localStorage.setItem('cart', JSON.stringify(cartItems.value))
-    }
-
-    const handleInput = (item: { id: number; quantity: number; availableQuantity: number }) => {
-      timeoutIds.value.forEach((id) => clearTimeout(id))
-      timeoutIds.value = []
-
-      let timeoutId = setTimeout(() => {
-        if (item.quantity < 1) {
-          item.quantity = 1
-        } else if (item.quantity > item.availableQuantity) {
-          item.quantity = item.availableQuantity
-        }
-        updateLocalStorage()
-      }, 500)
-
-      timeoutId = setTimeout(() => {}) as ReturnType<typeof setTimeout>
-      timeoutIds.value.push(timeoutId)
-    }
-
-    const checkout = async () => {
-      const products = cartItems.value.map((item: { id: number; quantity: number }) => ({
-        product_id: item.id,
-        quantity: item.quantity
-      }))
-
-      const order = {
-        products
-      }
-
-      console.log('Order payload:', order)
-
-      const getAccessToken = () => {
-        const cookieString = document.cookie
-        const cookies = cookieString.split('; ')
-        const tokenCookie = cookies.find((cookie: string) => cookie.startsWith('access_token='))
-        return tokenCookie ? tokenCookie.split('=')[1] : null
-      }
-
-      const token = getAccessToken()
-
-      try {
-        const response = await fetch(
-          'https://ecombackend-production-7935.up.railway.app/api/orders/',
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(order)
-          }
-        )
-
-        const responseData = await response.json().catch(() => null)
-        console.log('Response body:', responseData)
-
-        if (response.status === 401) {
-          alert('First you need to log in to your account')
-          router.push('/login')
-          return
-        }
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-
-        alert('Order placed successfully!')
-        localStorage.removeItem('cart')
-        cartItems.value = []
-        router.push('/profile')
-      } catch (error) {
-        console.error('Error placing order:', error)
-        alert('Failed to place order. Please try again.')
-      }
-    }
-
-    const goHome = () => {
-      router.push('/')
-    }
-
-    const fetchAvailableQuantities = async () => {
-      try {
-        const productIds = cartItems.value.map((item: { id: number }) => item.id).join(',')
-        const response = await axios.get(
-          `https://ecombackend-production-7935.up.railway.app/api/products/available-quantities?ids=${productIds}`
-        )
-
-        response.data.forEach((product: { id: number; quantity: number }) => {
-          const cartItem = cartItems.value.find((item: { id: number }) => item.id === product.id)
-          if (cartItem) {
-            cartItem.availableQuantity = product.quantity
-          }
-        })
-      } catch (error) {
-        console.error('Error fetching available quantities:', error)
-      }
-    }
-
-    fetchAvailableQuantities()
-
-    return {
-      cartItems,
-      totalPrice,
-      removeFromCart,
-      increaseQuantity,
-      decreaseQuantity,
-      handleInput,
-      checkout,
-      goHome
-    }
+const increaseQuantity = (item) => {
+  if (item.quantity < item.availableQuantity) {
+    item.quantity++
+    updateLocalStorage()
   }
+}
+
+const decreaseQuantity = (item) => {
+  if (item.quantity > 1) {
+    item.quantity--
+    updateLocalStorage()
+  }
+}
+
+const updateLocalStorage = () => {
+  localStorage.setItem('cart', JSON.stringify(cartItems.value))
+}
+
+const handleInput = (item) => {
+  timeoutIds.value.forEach((id) => clearTimeout(id))
+  timeoutIds.value = []
+
+  let timeoutId = setTimeout(() => {
+    if (item.quantity < 1) {
+      item.quantity = 1
+    } else if (item.quantity > item.availableQuantity) {
+      item.quantity = item.availableQuantity
+    }
+    updateLocalStorage()
+  }, 500)
+
+  timeoutIds.value.push(timeoutId)
+}
+
+const fetchAvailableQuantities = async () => {
+  const ids = cartItems.value.map((item) => item.id)
+  console.log('Requesting IDs:', ids)
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/products/available-quantities', {
+      params: { ids }
+    })
+    console.log('API response:', response.data)
+    // Continue processing
+  } catch (error) {
+    console.error('API error:', error.response.data)
+  }
+}
+
+const checkout = async () => {
+  const products = cartItems.value.map((item) => ({
+    product_id: item.id,
+    quantity: item.quantity
+  }))
+  // Handle the checkout process
+}
+
+onMounted(() => {
+  // Populate cartItems from localStorage or other source
+  const storedCart = localStorage.getItem('cart')
+  if (storedCart) {
+    cartItems.value = JSON.parse(storedCart)
+  }
+
+  fetchAvailableQuantities()
 })
 </script>
 
@@ -327,7 +242,7 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0 5px;
 }
 
-.quantity-button:hover {
+quantity-button:hover {
   background-color: #cfd7e3;
 }
 

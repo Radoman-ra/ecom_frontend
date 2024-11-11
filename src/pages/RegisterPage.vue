@@ -31,6 +31,7 @@
           v-model="password"
           placeholder="Password"
           type="password"
+          autocomplete="new-password"
           required
           class="input-field"
           :class="{ 'is-invalid': errors.password }"
@@ -44,6 +45,7 @@
           placeholder="Confirm Password"
           type="password"
           required
+          autocomplete="new-password"
           class="input-field"
           :class="{ 'is-invalid': errors.confirmPassword }"
         />
@@ -117,7 +119,7 @@ export default defineComponent({
       }
 
       try {
-        await axios.post('https://ecombackend-production-7935.up.railway.app/api/auth/register', {
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, {
           username: this.username,
           email: this.email,
           password: this.password
