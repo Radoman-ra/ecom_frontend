@@ -23,7 +23,6 @@
       <div v-if="passwordError" class="error-message">{{ passwordError }}</div>
       <div class="reg-and-log-but">
         <button type="submit" class="btn btn-login" :disabled="isSubmitting">Login</button>
-        <button type="button" class="btn btn-register" @click="goToRegister">Register</button>
       </div>
 
       <button type="button" class="btn btn-google" @click="loginWithGoogle">
@@ -45,6 +44,7 @@
 
         Login with Google
       </button>
+      <div class="register">Register? <a class="link" @click="goToRegister">register</a></div>
 
       <transition name="fade">
         <div v-if="loginError" class="login-error">{{ loginError }}</div>
@@ -171,6 +171,10 @@ export default defineComponent({
   gap: 10px;
 }
 
+.link {
+  color: #007bff;
+  cursor: pointer;
+}
 .google-icon {
   width: 20px;
   height: 20px;
@@ -198,7 +202,7 @@ export default defineComponent({
 .input-field {
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 15px;
+  border-radius: 10px;
   width: 200px;
 }
 
@@ -260,6 +264,13 @@ export default defineComponent({
   to {
     opacity: 1;
   }
+}
+
+.register {
+  border-top: 1px solid #c8c8c8;
+  padding-top: 5px;
+  font-size: 14px;
+  padding-left: 5px;
 }
 
 .fade-enter-active,

@@ -142,7 +142,7 @@ export default defineComponent({
         return
       }
       const formData = new FormData()
-      formData.append('avatar', this.avatarFile!)
+      formData.append('file', this.avatarFile!)
 
       try {
         const token = this.getCookie('access_token')
@@ -151,7 +151,7 @@ export default defineComponent({
           formData,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `${token}`,
               'Content-Type': 'multipart/form-data'
             }
           }
@@ -268,7 +268,12 @@ export default defineComponent({
     },
     calculateOrderTotal(order: any) {
       return order.products.reduce((total: number, product: any) => {
-        return total + product.details.price * product.quantity
+        if (product.details && product.details.price !== undefined) {
+          return total + product.details.price * product.quantity
+        } else {
+          console.warn('Product details or price is undefined', product)
+          return total
+        }
       }, 0)
     },
     async refreshToken() {

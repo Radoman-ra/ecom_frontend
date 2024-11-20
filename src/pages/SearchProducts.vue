@@ -193,7 +193,6 @@ import axios from 'axios'
 import HomeButtons from './HomeButtons.vue'
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL
-// const apiUrl = process.env.VITE_BACKEND_URL
 console.log({ apiUrl })
 
 function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {

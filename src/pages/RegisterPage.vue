@@ -51,9 +51,29 @@
         />
         <span v-if="errors.confirmPassword" class="error-text">{{ errors.confirmPassword }}</span>
       </div>
+      <div class="reg-and-log-but">
+        <button type="submit" class="btn btn-primary">Register</button>
+      </div>
+      <button type="button" class="btn btn-google" @click="loginWithGoogle">
+        <svg
+          class="google-icon"
+          aria-hidden="true"
+          focusable="false"
+          data-prefix="fab"
+          data-icon="google"
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 488 512"
+        >
+          <path
+            fill="currentColor"
+            d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+          ></path>
+        </svg>
 
-      <button type="submit" class="btn btn-primary">Register</button>
-      <button @click="goToLogin" class="btn btn-secondary">Go to Login</button>
+        Login with Google
+      </button>
+      <div class="login">Log in? <a class="link" @click="goToLogin">log in</a></div>
 
       <p v-if="message">{{ message }}</p>
     </form>
@@ -142,6 +162,10 @@ export default defineComponent({
         }
       }
     },
+    async loginWithGoogle() {
+      const apiUrl = import.meta.env.VITE_BACKEND_URL
+      window.location.href = `${apiUrl}/api/auth/login/google`
+    },
     goToLogin() {
       this.router.push('/login')
     }
@@ -174,10 +198,33 @@ export default defineComponent({
   flex-direction: column;
 }
 
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.login {
+  border-top: 1px solid #c8c8c8;
+  padding-top: 5px;
+  font-size: 14px;
+  padding-left: 5px;
+}
+
+.link {
+  color: #007bff;
+  cursor: pointer;
+}
+
+.reg-and-log-but {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
 .input-field {
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 15px;
+  border-radius: 10px;
   width: 200px;
 }
 
@@ -194,14 +241,24 @@ export default defineComponent({
 .btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 20px;
+  border-radius: 10px;
   cursor: pointer;
+  flex: 1;
   transition: background-color 0.3s;
 }
 
 .btn-primary {
   background-color: #007bff;
   color: white;
+}
+
+.btn-google {
+  background-color: #db4437;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .btn-primary:hover {
