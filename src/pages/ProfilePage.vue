@@ -5,99 +5,115 @@
         <HomeButtons />
       </div>
     </div>
-    <div class="profile-container">
-      <div class="avatar-section">
-        <img :src="avatarUrl" alt="Profile Avatar" v-if="avatarUrl" />
-        <p v-else>No avatar uploaded</p>
-        <input type="file" @change="onAvatarChange" accept="image/*" />
-        <button @click="uploadAvatar">Upload Avatar</button>
-        <p v-if="errorMessage">{{ errorMessage }}</p>
-      </div>
-      <h1 v-if="orders.length > 0">My Orders</h1>
-      <form class="filter-form" v-if="orders.length > 0" @submit.prevent="fetchOrders">
-        <div class="order-filter">
-          <label for="status">Order Status:</label>
-          <select v-model="selectedStatus" class="rounded-input">
-            <option value="">All</option>
-            <option value="Pending">Pending</option>
-            <option value="Shipped">Shipped</option>
-            <option value="Delivered">Delivered</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-          <button class="filter-button" type="submit">Filter</button>
+    <div class="container_of_containers">
+      <div class="avatar-container containers">
+        <div class="avatar-section">
+          <img :src="avatarUrl" alt="Profile Avatar" v-if="avatarUrl" class="avatar_img" />
+          <p v-else>No avatar uploaded</p>
+          <input type="file" @change="onAvatarChange" accept="image/*" />
+          <button @click="uploadAvatar">Upload Avatar</button>
+          <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
-      </form>
+      </div>
+      <div class="profile-container containers">
+        <h1 v-if="orders.length > 0">My Orders</h1>
+        <form class="filter-form" v-if="orders.length > 0" @submit.prevent="fetchOrders">
+          <div class="order-filter">
+            <label for="status">Order Status:</label>
+            <select v-model="selectedStatus" class="rounded-input">
+              <option value="">All</option>
+              <option value="Pending">Pending</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+            <button class="filter-button" type="submit">Filter</button>
+          </div>
+        </form>
 
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-      <div v-if="orders.length && !errorMessage" class="orders-list">
-        <ul>
-          <li v-for="order in orders" :key="order.id" class="order-card">
-            <div class="order-header">
-              <h2 class="order-id">Order ID: {{ order.id }}</h2>
-              <p>Order Date: {{ new Date(order.order_date).toLocaleString() }}</p>
-              <p class="order-status">Status: {{ order.status }}</p>
-            </div>
+        <div v-if="orders.length && !errorMessage" class="orders-list">
+          <ul>
+            <li v-for="order in orders" :key="order.id" class="order-card">
+              <div class="order-header">
+                <h2 class="order-id">Order ID: {{ order.id }}</h2>
+                <p>Order Date: {{ new Date(order.order_date).toLocaleString() }}</p>
+                <p class="order-status">Status: {{ order.status }}</p>
+              </div>
 
-            <div class="progress-bar">
-              <div class="progress-fill" :style="getProgressBarStyle(order.status)"></div>
-              <span v-if="order.status === 'Cancelled'" class="cancelled-text">Cancelled</span>
-            </div>
+              <div class="progress-bar">
+                <div class="progress-fill" :style="getProgressBarStyle(order.status)"></div>
+                <span v-if="order.status === 'Cancelled'" class="cancelled-text">Cancelled</span>
+              </div>
 
-            <ul class="product-list">
-              <li v-for="product in order.products" :key="product.product_id" class="product-card">
-                <div v-if="product.details" class="product-info">
-                  <img :src="product.details.imageUrl" alt="Product Image" class="product-image" />
-                  <div class="product-details">
-                    <div>
-                      <div class="product-name">{{ product.details.name }}</div>
-                      <div class="product-category">
-                        Category: {{ product.details.category.name }}
+              <ul class="product-list">
+                <li
+                  v-for="product in order.products"
+                  :key="product.product_id"
+                  class="product-card"
+                >
+                  <div v-if="product.details" class="product-info">
+                    <img
+                      :src="product.details.pictureName"
+                      alt="Product Image"
+                      class="product-image"
+                    />
+                    <div class="product-details">
+                      <div>
+                        <div class="product-name">{{ product.details.name }}</div>
+                        <div class="product-category">
+                          Category: {{ product.details.category.name }}
+                        </div>
+                      </div>
+                      <div class="product-price">
+                        {{ product.details.price }} x {{ product.quantity }} =
+                        {{ (product.details.price * product.quantity).toFixed(2) }}
                       </div>
                     </div>
-                    <div class="product-price">
-                      {{ product.details.price }} x {{ product.quantity }} =
-                      {{ (product.details.price * product.quantity).toFixed(2) }}
-                    </div>
-                  </div>
-                  <div class="product-supplier">
-                    <div class="supplier-text">Supplier:</div>
-                    <div class="product-supplier-info">
-                      <div class="supplier-name">{{ product.details.supplier.name }}</div>
-                      <div class="supplier-email">{{ product.details.supplier.contact_email }}</div>
-                      <div class="supplier-phone">
-                        Phone: {{ product.details.supplier.phone_number }}
+                    <div class="product-supplier">
+                      <div class="supplier-text">Supplier:</div>
+                      <div class="product-supplier-info">
+                        <div class="supplier-name">{{ product.details.supplier.name }}</div>
+                        <div class="supplier-email">
+                          {{ product.details.supplier.contact_email }}
+                        </div>
+                        <div class="supplier-phone">
+                          Phone: {{ product.details.supplier.phone_number }}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div v-else>
-                  <p>Loading product details...</p>
-                </div>
-              </li>
-            </ul>
+                  <div v-else>
+                    <p>Loading product details...</p>
+                  </div>
+                </li>
+              </ul>
 
-            <div class="final-price">Total Price: ${{ calculateOrderTotal(order).toFixed(2) }}</div>
-          </li>
-        </ul>
-      </div>
+              <div class="final-price">
+                Total Price: ${{ calculateOrderTotal(order).toFixed(2) }}
+              </div>
+            </li>
+          </ul>
+        </div>
 
-      <div v-else class="error">
-        <p>You have no orders yet.</p>
-      </div>
+        <div v-else class="error">
+          <p>You have no orders yet.</p>
+        </div>
 
-      <div v-if="orders.length > 0" class="pagination">
-        <button class="pagination-prev-button" @click="prevPage" :disabled="currentPage === 1">
-          &#8592;
-        </button>
-        <p>Page {{ currentPage }} of {{ totalPages }}</p>
-        <button
-          class="pagination-next-button"
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-        >
-          &rarr;
-        </button>
+        <div v-if="orders.length > 0" class="pagination">
+          <button class="pagination-prev-button" @click="prevPage" :disabled="currentPage === 1">
+            &#8592;
+          </button>
+          <p>Page {{ currentPage }} of {{ totalPages }}</p>
+          <button
+            class="pagination-next-button"
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+          >
+            &rarr;
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -156,7 +172,8 @@ export default defineComponent({
             }
           }
         )
-        this.avatarUrl = response.data.avatar_url
+        const pictureName = response.data.avatar_url
+        this.avatarUrl = `${import.meta.env.VITE_BACKEND_URL}/static/avatars/${pictureName}`
         this.errorMessage = ''
         alert('Avatar uploaded successfully!')
       } catch (error) {
@@ -180,9 +197,11 @@ export default defineComponent({
             Authorization: `${token}`
           }
         })
-        this.avatarUrl = response.data.avatarUrl
+        const pictureName = response.data.avatar_url
+        this.avatarUrl = `${import.meta.env.VITE_BACKEND_URL}/static/avatars/${pictureName}`
       } catch (error: any) {
         console.error('Failed to fetch avatar', error)
+        this.errorMessage = 'Failed to fetch avatar.'
       }
     },
     getCookie(name: string): string | null {
@@ -258,7 +277,7 @@ export default defineComponent({
 
         product.details = {
           ...productDetails,
-          imageUrl: `${import.meta.env.VITE_BACKEND_URL}/static/images/100x100/${productDetails.photo_path}`,
+          pictureName: `${import.meta.env.VITE_BACKEND_URL}/static/images/100x100/${productDetails.photo_path}`,
           category: categoryDetails,
           supplier: supplierDetails
         }
@@ -405,6 +424,13 @@ export default defineComponent({
   gap: 20px;
 }
 
+.avatar_img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .supplier-text {
   font-weight: bold;
   color: rgba(58, 58, 58, 0.315);
@@ -444,14 +470,33 @@ export default defineComponent({
 .profile-container {
   min-height: 350px;
   display: flex;
+  max-width: 800px;
   flex-direction: column;
   align-items: center;
+}
+
+.avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 710px;
+}
+
+.containers {
   padding: 20px;
   background-color: #f8f9fa;
-  width: 80%;
-  max-width: 800px;
   border-radius: 25px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.container_of_containers {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
 .home-button {
