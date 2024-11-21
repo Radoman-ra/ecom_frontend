@@ -271,6 +271,7 @@ export default defineComponent({
   padding-top: 5px;
   font-size: 14px;
   padding-left: 5px;
+  text-align: right;
 }
 
 .fade-enter-active,
