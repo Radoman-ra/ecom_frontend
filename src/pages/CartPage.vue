@@ -18,11 +18,11 @@
               <div class="quantity-controls">
                 <button class="quantity-button" @click="decreaseQuantity(item)">-</button>
                 <input
-                  type="number"
                   v-model.number="item.quantity"
-                  min="1"
                   :max="item.availableQuantity"
                   class="quantity-input"
+                  min="1"
+                  type="number"
                   @input="handleInput(item)"
                 />
                 <button class="quantity-button" @click="increaseQuantity(item)">+</button>
@@ -35,7 +35,7 @@
           </li>
         </ul>
       </div>
-      <div class="checkout-summary" v-if="cartItems.length > 0">
+      <div v-if="cartItems.length > 0" class="checkout-summary">
         <div class="total-price-box">
           <div>Total:</div>
           <div>{{ totalPrice.toFixed(2) }}$</div>
@@ -47,18 +47,28 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import HomeButtons from './HomeButtons.vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+
+interface CartItem {
+  id: number
+  name: string
+  description: string
+  photo_path: string
+  price: number
+  quantity: number
+  availableQuantity: number
+}
 
 export default {
   components: {
     HomeButtons
   },
   setup() {
-    const cartItems = ref([])
-    const timeoutIds = ref([])
+    const cartItems = ref<CartItem[]>([])
+    const timeoutIds = ref<number[]>([])
 
     const router = useRouter()
 
@@ -66,14 +76,14 @@ export default {
       return `http://127.0.0.1:8000/static/images/500x500/${path}`
     }
 
-    const increaseQuantity = (item: { quantity: number; availableQuantity: number }): void => {
+    const increaseQuantity = (item: CartItem): void => {
       if (item.quantity < item.availableQuantity) {
         item.quantity++
         updateLocalStorage()
       }
     }
 
-    const decreaseQuantity = (item: { quantity: number; availableQuantity: number }): void => {
+    const decreaseQuantity = (item: CartItem): void => {
       if (item.quantity > 1) {
         item.quantity--
         updateLocalStorage()
@@ -84,11 +94,11 @@ export default {
       localStorage.setItem('cart', JSON.stringify(cartItems.value))
     }
 
-    const handleInput = (item: { quantity: number; availableQuantity: number }): void => {
-      timeoutIds.value.forEach((id: number) => clearTimeout(id))
+    const handleInput = (item: CartItem): void => {
+      timeoutIds.value.forEach((id) => clearTimeout(id))
       timeoutIds.value = []
 
-      let timeoutId = setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         if (item.quantity < 1) {
           item.quantity = 1
         } else if (item.quantity > item.availableQuantity) {
@@ -97,21 +107,19 @@ export default {
         updateLocalStorage()
       }, 500)
 
-      timeoutIds.value.push(timeoutId as unknown as number)
+      timeoutIds.value.push(timeoutId as unknown as number) // Принудительный тип.
     }
 
     const fetchAvailableQuantities = async (): Promise<void> => {
-      const ids = cartItems.value.map((item: { id: number }) => item.id)
-      console.log('Requesting IDs:', ids)
+      const ids = cartItems.value.map((item) => item.id)
       try {
         const responses = await Promise.all(
-          ids.map((id: number) => axios.get(`http://127.0.0.1:8000/api/products/${id}`))
+          ids.map((id) => axios.get(`http://127.0.0.1:8000/api/products/${id}`))
         )
         responses.forEach((response, index) => {
           const item = cartItems.value[index]
           item.availableQuantity = response.data.quantity
         })
-        console.log('Updated cart items with available quantities:', cartItems.value)
       } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           console.error('API error:', error.response?.data)
@@ -121,8 +129,13 @@ export default {
       }
     }
 
+    const removeFromCart = (id: number): void => {
+      cartItems.value = cartItems.value.filter((item) => item.id !== id)
+      updateLocalStorage()
+    }
+
     const checkout = async () => {
-      const products = cartItems.value.map((item: { id: number; quantity: number }) => ({
+      const products = cartItems.value.map((item) => ({
         product_id: item.id,
         quantity: item.quantity
       }))
@@ -130,8 +143,6 @@ export default {
       const order = {
         products
       }
-
-      console.log('Order payload:', order)
 
       const getAccessToken = () => {
         const cookieString = document.cookie
@@ -141,7 +152,6 @@ export default {
       }
 
       const token = getAccessToken()
-      console.log('JWT token:', token)
 
       try {
         const response = await fetch('http://127.0.0.1:8000/api/orders/', {
@@ -152,12 +162,6 @@ export default {
           },
           body: JSON.stringify(order)
         })
-
-        console.log('Response status:', response.status)
-        console.log('Response headers:', response.headers)
-
-        const responseData = await response.json().catch(() => null)
-        console.log('Response body:', responseData)
 
         if (response.status === 401) {
           alert('First you need to log in to your account')
@@ -180,9 +184,7 @@ export default {
     }
 
     const totalPrice = computed((): number => {
-      return cartItems.value.reduce((total: number, item: { price: number; quantity: number }) => {
-        return total + item.price * item.quantity
-      }, 0)
+      return cartItems.value.reduce((total, item) => total + item.price * item.quantity, 0)
     })
 
     onMounted(() => {
@@ -202,7 +204,8 @@ export default {
       totalPrice,
       getImageUrl,
       decreaseQuantity,
-      increaseQuantity
+      increaseQuantity,
+      removeFromCart
     }
   }
 }

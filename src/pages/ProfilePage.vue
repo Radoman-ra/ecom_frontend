@@ -8,16 +8,16 @@
     <div class="container_of_containers">
       <div class="avatar-container containers">
         <div class="avatar-section">
-          <img :src="avatarUrl" alt="Profile Avatar" v-if="avatarUrl" class="avatar_img" />
+          <img v-if="avatarUrl" :src="avatarUrl" alt="Profile Avatar" class="avatar_img" />
           <p v-else>No avatar uploaded</p>
-          <input type="file" @change="onAvatarChange" accept="image/*" />
+          <input accept="image/*" type="file" @change="onAvatarChange" />
           <button @click="uploadAvatar">Upload Avatar</button>
           <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
       </div>
       <div class="profile-container containers">
         <h1 v-if="orders.length > 0">My Orders</h1>
-        <form class="filter-form" v-if="orders.length > 0" @submit.prevent="fetchOrders">
+        <form v-if="orders.length > 0" class="filter-form" @submit.prevent="fetchOrders">
           <div class="order-filter">
             <label for="status">Order Status:</label>
             <select v-model="selectedStatus" class="rounded-input">
@@ -43,7 +43,7 @@
               </div>
 
               <div class="progress-bar">
-                <div class="progress-fill" :style="getProgressBarStyle(order.status)"></div>
+                <div :style="getProgressBarStyle(order.status)" class="progress-fill"></div>
                 <span v-if="order.status === 'Cancelled'" class="cancelled-text">Cancelled</span>
               </div>
 
@@ -102,14 +102,14 @@
         </div>
 
         <div v-if="orders.length > 0" class="pagination">
-          <button class="pagination-prev-button" @click="prevPage" :disabled="currentPage === 1">
+          <button :disabled="currentPage === 1" class="pagination-prev-button" @click="prevPage">
             &#8592;
           </button>
           <p>Page {{ currentPage }} of {{ totalPages }}</p>
           <button
+            :disabled="currentPage === totalPages"
             class="pagination-next-button"
             @click="nextPage"
-            :disabled="currentPage === totalPages"
           >
             &rarr;
           </button>
@@ -379,6 +379,7 @@ export default defineComponent({
   width: 100%;
   height: 350px;
 }
+
 .profile-wrapper {
   display: flex;
   flex-direction: column;
@@ -387,6 +388,7 @@ export default defineComponent({
   min-height: 100vh;
   background-color: #e9ecef;
 }
+
 .product-image {
   max-width: 100px;
   border-radius: 12px;
@@ -413,6 +415,7 @@ export default defineComponent({
   display: flex;
   gap: 20px;
 }
+
 .progress-fill {
   height: 100%;
   border-radius: 10px;
@@ -458,6 +461,7 @@ export default defineComponent({
   font-weight: 550;
   margin-top: auto;
 }
+
 .cancelled-text {
   position: absolute;
   top: 0;
@@ -600,6 +604,7 @@ export default defineComponent({
   max-width: 800px;
   width: 80%;
 }
+
 .avatar-section {
   display: flex;
   flex-direction: column;

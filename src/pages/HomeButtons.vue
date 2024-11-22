@@ -1,11 +1,11 @@
 <template>
   <div class="auth-buttons">
-    <img src="../icon/logo.svg" @click="home" alt="Logo" class="logo" />
-    <button v-if="isAuthenticated" @click="logout" class="btn">Logout</button>
-    <button v-if="!isAuthenticated" @click="goToLogin" class="btn">Login</button>
-    <button v-if="!isAuthenticated" @click="goToRegister" class="btn">Register</button>
-    <button v-else @click="goToProfile" class="btn">Profile</button>
-    <button v-if="isAuthenticated" @click="goToCart" class="btn">Cart</button>
+    <img alt="Logo" class="logo" src="../icon/logo.svg" @click="home" />
+    <button v-if="isAuthenticated" class="btn" @click="logout">Logout</button>
+    <button v-if="!isAuthenticated" class="btn" @click="goToLogin">Login</button>
+    <button v-if="!isAuthenticated" class="btn" @click="goToRegister">Register</button>
+    <button v-else class="btn" @click="goToProfile">Profile</button>
+    <button v-if="isAuthenticated" class="btn" @click="goToCart">Cart</button>
   </div>
 </template>
 

@@ -1,44 +1,44 @@
 <template>
   <div class="login-page">
-    <form @submit.prevent="login" class="login-form">
+    <form class="login-form" @submit.prevent="login">
       <div class="login-text">Login</div>
 
       <input
         v-model="email"
+        :class="{ 'input-error': emailError }"
+        class="input-field"
         placeholder="Email"
         required
-        class="input-field"
-        :class="{ 'input-error': emailError }"
       />
       <div v-if="emailError" class="error-message">{{ emailError }}</div>
 
       <input
         v-model="password"
-        type="password"
+        :class="{ 'input-error': passwordError }"
+        class="input-field"
         placeholder="Password"
         required
-        class="input-field"
-        :class="{ 'input-error': passwordError }"
+        type="password"
       />
       <div v-if="passwordError" class="error-message">{{ passwordError }}</div>
       <div class="reg-and-log-but">
-        <button type="submit" class="btn btn-login" :disabled="isSubmitting">Login</button>
+        <button :disabled="isSubmitting" class="btn btn-login" type="submit">Login</button>
       </div>
 
-      <button type="button" class="btn btn-google" @click="loginWithGoogle">
+      <button class="btn btn-google" type="button" @click="loginWithGoogle">
         <svg
-          class="google-icon"
           aria-hidden="true"
-          focusable="false"
-          data-prefix="fab"
+          class="google-icon"
           data-icon="google"
+          data-prefix="fab"
+          focusable="false"
           role="img"
-          xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 488 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            fill="currentColor"
             d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+            fill="currentColor"
           ></path>
         </svg>
 
@@ -58,6 +58,7 @@ import { defineComponent, ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import Cookies from 'js-cookie'
+
 const apiUrl = import.meta.env.VITE_BACKEND_URL
 
 export default defineComponent({
@@ -175,10 +176,12 @@ export default defineComponent({
   color: #007bff;
   cursor: pointer;
 }
+
 .google-icon {
   width: 20px;
   height: 20px;
 }
+
 .login-page {
   display: flex;
   flex-direction: column;
@@ -278,6 +281,7 @@ export default defineComponent({
 .fade-leave-active {
   transition: opacity 0.5s;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

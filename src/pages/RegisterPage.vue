@@ -1,15 +1,15 @@
 <template>
   <div class="register-page">
-    <form @submit.prevent="register" class="register-form">
+    <form class="register-form" @submit.prevent="register">
       <h2 class="register-text">Register</h2>
 
       <div class="form-group">
         <input
           v-model="username"
+          :class="{ 'is-invalid': errors.username }"
+          class="input-field"
           placeholder="Username"
           required
-          class="input-field"
-          :class="{ 'is-invalid': errors.username }"
         />
         <span v-if="errors.username" class="error-text">{{ errors.username }}</span>
       </div>
@@ -17,11 +17,11 @@
       <div class="form-group">
         <input
           v-model="email"
-          placeholder="Email"
-          type="email"
-          required
-          class="input-field"
           :class="{ 'is-invalid': errors.email }"
+          class="input-field"
+          placeholder="Email"
+          required
+          type="email"
         />
         <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
       </div>
@@ -29,12 +29,12 @@
       <div class="form-group">
         <input
           v-model="password"
-          placeholder="Password"
-          type="password"
-          autocomplete="new-password"
-          required
-          class="input-field"
           :class="{ 'is-invalid': errors.password }"
+          autocomplete="new-password"
+          class="input-field"
+          placeholder="Password"
+          required
+          type="password"
         />
         <span v-if="errors.password" class="error-text">{{ errors.password }}</span>
       </div>
@@ -42,32 +42,32 @@
       <div class="form-group">
         <input
           v-model="confirmPassword"
-          placeholder="Confirm Password"
-          type="password"
-          required
+          :class="{ 'is-invalid': errors.confirmPassword }"
           autocomplete="new-password"
           class="input-field"
-          :class="{ 'is-invalid': errors.confirmPassword }"
+          placeholder="Confirm Password"
+          required
+          type="password"
         />
         <span v-if="errors.confirmPassword" class="error-text">{{ errors.confirmPassword }}</span>
       </div>
       <div class="reg-and-log-but">
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button class="btn btn-primary" type="submit">Register</button>
       </div>
-      <button type="button" class="btn btn-google" @click="loginWithGoogle">
+      <button class="btn btn-google" type="button" @click="loginWithGoogle">
         <svg
-          class="google-icon"
           aria-hidden="true"
-          focusable="false"
-          data-prefix="fab"
+          class="google-icon"
           data-icon="google"
+          data-prefix="fab"
+          focusable="false"
           role="img"
-          xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 488 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            fill="currentColor"
             d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+            fill="currentColor"
           ></path>
         </svg>
 

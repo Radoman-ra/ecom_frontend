@@ -13,49 +13,49 @@
             <h2>Search Filters</h2>
             <input
               v-model="productName"
-              @input="debounceSearchProducts"
-              placeholder="Product Name"
               class="input-field"
+              placeholder="Product Name"
+              @input="debounceSearchProducts"
             />
             <input
               v-model="creationDateFrom"
-              @input="debounceSearchProducts"
+              class="input-field"
               placeholder="Creation Date From"
               type="date"
-              class="input-field"
+              @input="debounceSearchProducts"
             />
             <input
               v-model="creationDateTo"
-              @input="debounceSearchProducts"
+              class="input-field"
               placeholder="Creation Date To"
               type="date"
-              class="input-field"
+              @input="debounceSearchProducts"
             />
             <input
               v-model="categoryName"
-              @input="debounceSearchProducts"
-              placeholder="Category Name"
               class="input-field"
+              placeholder="Category Name"
+              @input="debounceSearchProducts"
             />
             <input
               v-model="supplierName"
-              @input="debounceSearchProducts"
-              placeholder="Supplier Name"
               class="input-field"
+              placeholder="Supplier Name"
+              @input="debounceSearchProducts"
             />
             <input
               v-model="minPrice"
-              @input="debounceSearchProducts"
+              class="input-field"
               placeholder="Min Price"
               type="number"
-              class="input-field"
+              @input="debounceSearchProducts"
             />
             <input
               v-model="maxPrice"
-              @input="debounceSearchProducts"
+              class="input-field"
               placeholder="Max Price"
               type="number"
-              class="input-field"
+              @input="debounceSearchProducts"
             />
           </form>
         </div>
@@ -67,16 +67,16 @@
             <div
               v-for="product in products"
               :key="product.id"
-              @click="openModal(product)"
               class="product-card"
+              @click="openModal(product)"
             >
               <div class="image-container">
                 <img
+                  :class="{ blurred: loading }"
                   :src="loading ? product.lowQltyImgUrl : product.imageUrl"
                   alt="Product Image"
-                  @load="loading = false"
                   class="product-image"
-                  :class="{ blurred: loading }"
+                  @load="loading = false"
                 />
                 <span v-if="getCartQuantity(product.id) > 0" class="cart-tag">In Cart</span>
                 <span v-if="product.availableQuantity === 0" class="outofstock-tag"
@@ -91,10 +91,10 @@
 
           <div v-if="products.length && !errorMessage && totalPages > 1" class="pagination">
             <select
-              v-model.number="limit"
-              @change="debounceSearchProducts"
               id="limit"
+              v-model.number="limit"
               class="input-field"
+              @change="debounceSearchProducts"
             >
               <option :value="5">5</option>
               <option :value="10">10</option>
@@ -104,13 +104,13 @@
             </select>
             <div class="nav-btn-prev">
               <button
-                @click="goToPage(1)"
                 :disabled="currentPage === 1"
                 class="pagination-btn first"
+                @click="goToPage(1)"
               >
                 First
               </button>
-              <button @click="prevPage" :disabled="currentPage === 1" class="pagination-btn prev">
+              <button :disabled="currentPage === 1" class="pagination-btn prev" @click="prevPage">
                 &#8592;
               </button>
             </div>
@@ -119,16 +119,16 @@
             </div>
             <div class="nav-btn-next">
               <button
-                @click="nextPage"
                 :disabled="currentPage === totalPages"
                 class="pagination-btn next"
+                @click="nextPage"
               >
                 &rarr;
               </button>
               <button
-                @click="goToPage(totalPages)"
                 :disabled="currentPage === totalPages"
                 class="pagination-btn last"
+                @click="goToPage(totalPages)"
               >
                 Last
               </button>
@@ -139,23 +139,23 @@
 
       <div
         v-if="showModal"
-        class="modal"
-        @click="closeModal"
         aria-modal="true"
+        class="modal"
         role="dialog"
         tabindex="-1"
+        @click="closeModal"
       >
         <div class="modal-content" @click.stop>
-          <span @click="closeModal" class="close" role="button" aria-label="Close modal"
+          <span aria-label="Close modal" class="close" role="button" @click="closeModal"
             >&times;</span
           >
           <div class="modal-main">
             <img
+              :class="{ blurred: loading }"
               :src="loading ? selectedProduct.lowQltyImgUrl : selectedProduct.imageUrl"
               alt="Product Image"
-              @load="loading = false"
               class="modal-product-image"
-              :class="{ blurred: loading }"
+              @load="loading = false"
             />
             <div class="modal-info">
               <h2 class="modal-title">{{ selectedProduct.name }}</h2>
@@ -173,8 +173,8 @@
               <div class="cart-section">
                 <button
                   v-if="!(selectedProduct.availableQuantity == 0)"
-                  @click="addToCart(selectedProduct)"
                   class="btn add-cart-btn"
+                  @click="addToCart(selectedProduct)"
                 >
                   <div>Add to Cart</div>
                 </button>
@@ -351,9 +351,11 @@ body {
   justify-content: flex-end;
   max-width: 80rem;
 }
+
 .header {
   margin-top: 6rem;
 }
+
 .modal {
   position: fixed;
   top: 0;
@@ -380,6 +382,7 @@ body {
   margin-bottom: 10px;
   color: #616e70;
 }
+
 .modal-qty {
   margin-bottom: 10px;
 }
@@ -553,10 +556,12 @@ body {
   .pagination {
     flex-direction: column;
   }
+
   .pagination-btn {
     width: 100%;
     margin: 5px 0;
   }
+
   .pagination-label {
     margin: 10px 0;
   }
