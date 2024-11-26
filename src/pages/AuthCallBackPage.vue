@@ -19,8 +19,6 @@ export default defineComponent({
       const refreshToken = urlParams.get('refresh_token')
       const ACCESS_TOKEN_EXPIRE_MINUTES = 15
       const REFRESH_TOKEN_EXPIRE_DAYS = 7
-      console.log(accessToken)
-      console.log(refreshToken)
 
       if (accessToken && refreshToken) {
         Cookies.set('access_token', accessToken, {
