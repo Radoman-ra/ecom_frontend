@@ -73,7 +73,7 @@ export default {
     const router = useRouter()
 
     const getImageUrl = (path: string): string => {
-      return `${VITE_BACKEND_URL}/static/images/500x500/${path}`
+      return `${import.meta.env.VITE_BACKEND_URL}/static/images/500x500/${path}`
     }
 
     const increaseQuantity = (item: CartItem): void => {
@@ -114,7 +114,7 @@ export default {
       const ids = cartItems.value.map((item) => item.id)
       try {
         const responses = await Promise.all(
-          ids.map((id) => axios.get(`${VITE_BACKEND_URL}/api/products/${id}`))
+          ids.map((id) => axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`))
         )
         responses.forEach((response, index) => {
           const item = cartItems.value[index]
