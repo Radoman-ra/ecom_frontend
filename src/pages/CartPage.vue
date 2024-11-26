@@ -73,7 +73,7 @@ export default {
     const router = useRouter()
 
     const getImageUrl = (path: string): string => {
-      return `http://127.0.0.1:8000/static/images/500x500/${path}`
+      return `${VITE_BACKEND_URL}/static/images/500x500/${path}`
     }
 
     const increaseQuantity = (item: CartItem): void => {
@@ -107,14 +107,14 @@ export default {
         updateLocalStorage()
       }, 500)
 
-      timeoutIds.value.push(timeoutId as unknown as number) // Принудительный тип.
+      timeoutIds.value.push(timeoutId as unknown as number)
     }
 
     const fetchAvailableQuantities = async (): Promise<void> => {
       const ids = cartItems.value.map((item) => item.id)
       try {
         const responses = await Promise.all(
-          ids.map((id) => axios.get(`http://127.0.0.1:8000/api/products/${id}`))
+          ids.map((id) => axios.get(`${VITE_BACKEND_URL}/api/products/${id}`))
         )
         responses.forEach((response, index) => {
           const item = cartItems.value[index]
@@ -154,7 +154,7 @@ export default {
       const token = getAccessToken()
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/orders/', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/`, {
           method: 'POST',
           headers: {
             Authorization: `${token}`,
