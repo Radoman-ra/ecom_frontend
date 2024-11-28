@@ -10,9 +10,11 @@
         <div class="avatar-section">
           <img v-if="avatarUrl" :src="avatarUrl" alt="Profile Avatar" class="avatar_img" />
           <p v-else>No avatar uploaded</p>
-          <input accept="image/*" type="file" @change="onAvatarChange" />
-          <button @click="uploadAvatar">Upload Avatar</button>
-          <p v-if="errorMessage">{{ errorMessage }}</p>
+          <div class="upload_image_section">
+            <input accept="image/*" type="file" @change="onAvatarChange" />
+            <button @click="uploadAvatar">Upload Avatar</button>
+            <p v-if="errorMessage">{{ errorMessage }}</p>
+          </div>
         </div>
       </div>
       <div class="profile-container containers">
@@ -462,6 +464,12 @@ export default defineComponent({
   margin-top: auto;
 }
 
+.upload_image_section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .cancelled-text {
   position: absolute;
   top: 0;
@@ -483,8 +491,6 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  max-width: 710px;
 }
 
 .containers {
@@ -607,8 +613,9 @@ export default defineComponent({
 
 .avatar-section {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 20px;
   margin-bottom: 20px;
 }
 
