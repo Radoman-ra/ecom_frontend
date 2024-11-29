@@ -497,7 +497,10 @@ export default defineComponent({
   padding: 20px;
   background-color: #f8f9fa;
   border-radius: 25px;
+  max-width: 850px;
+  width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
 
 .container_of_containers {
